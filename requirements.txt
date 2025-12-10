@@ -1,4 +1,4 @@
-Django==3.12.0      # (o la versión que estés usando)
+Django>=5.2,<6.0     # (o la versión que estés usando)
 gunicorn
 whitenoise
 psycopg2-binary
