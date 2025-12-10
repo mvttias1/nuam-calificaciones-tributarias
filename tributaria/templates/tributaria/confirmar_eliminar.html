@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Eliminar calificación{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">Eliminar calificación</h1>
+
+<div class="nuam-card p-4">
+  <p>
+    ¿Estás seguro de que deseas eliminar la calificación
+    <strong>#{{ calificacion.id }}</strong> correspondiente al emisor
+    <strong>{{ calificacion.emisor }}</strong> del año
+    <strong>{{ calificacion.anio_tributario }}</strong>?
+  </p>
+
+  <form method="post" class="mt-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'listar_calificaciones' %}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

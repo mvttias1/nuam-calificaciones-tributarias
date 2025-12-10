@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h3>Subir Archivo Tributario (Excel o CSV)</h3>
+
+    <div class="alert alert-info mt-3">
+        ✅ Formatos permitidos: <strong>CSV</strong> / <strong>Excel</strong> (XLS, XLSX)<br>
+        📄 Para subir <strong>PDF</strong> use el módulo <em>"Subir PDF"</em>.
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} mt-2">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" onsubmit="mostrarCarga()">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary mt-2">
+            Subir archivo
+        </button>
+    </form>
+
+    <div id="cargando" class="alert alert-warning mt-3" style="display:none;">
+        ⏳ Procesando archivo, por favor espere...
+    </div>
+</div>
+
+<script>
+function mostrarCarga() {
+    const alerta = document.getElementById("cargando");
+    if (alerta) {
+        alerta.style.display = "block";
+    }
+}
+</script>
+
+{% endblock %}

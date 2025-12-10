@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Panel de Control</h2>
+
+    <div class="row mt-4">
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Calificaciones</h5>
+                    <h3 class="card-text">{{ total_calificaciones }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Archivos Excel / CSV</h5>
+                    <h3 class="card-text">{{ total_archivos }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">PDFs subidos</h5>
+                    <h3 class="card-text">{{ total_pdfs }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Errores</h5>
+                    <h3 class="card-text">{{ total_errores }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h4>Últimas acciones</h4>
+
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Acción</th>
+                <th>Entidad</th>
+                <th>ID registro</th>
+                <th>Detalle</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in ultimas_acciones %}
+            <tr>
+                <td>{{ log.fecha }}</td>
+                <td>{{ log.usuario }}</td>
+                <td>{{ log.accion }}</td>
+                <td>{{ log.entidad }}</td>
+                <td>{{ log.id_registro }}</td>
+                <td>{{ log.detalle }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Sin registros todavía.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

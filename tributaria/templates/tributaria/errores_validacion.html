@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Errores de validación</h2>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Archivo</th>
+        <th>Fila</th>
+        <th>Mensaje</th>
+        <th>Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for e in errores %}
+        <tr>
+            <td>{{ e.archivo.id }} - {{ e.archivo }}</td>
+            <td>{{ e.nro_linea }}</td>
+            <td>{{ e.mensaje }}</td>
+            <td>{{ e.fecha }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4">No se encontraron errores de validación.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

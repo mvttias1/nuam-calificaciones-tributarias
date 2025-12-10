@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Notificaciones</h1>
+
+<table class="table table-striped mt-3">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Nivel</th>
+      <th>Mensaje</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in notificaciones %}
+      <tr>
+        <td>{{ n.fecha }}</td>
+        <td>
+          {% if n.nivel == "ERROR" %}
+            <span class="badge bg-danger">Error</span>
+          {% elif n.nivel == "WARNING" %}
+            <span class="badge bg-warning text-dark">Advertencia</span>
+          {% else %}
+            <span class="badge bg-info text-dark">Info</span>
+          {% endif %}
+        </td>
+        <td>{{ n.mensaje }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="3">No tienes notificaciones.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

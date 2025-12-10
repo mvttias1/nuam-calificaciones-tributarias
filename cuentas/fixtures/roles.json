@@ -1,0 +1,42 @@
+[
+  {
+    "model": "cuentas.rol",
+    "pk": 1,
+    "fields": {
+      "nombre": "Corredor",
+      "descripcion": "Puede subir archivos tributarios y ver calificaciones."
+    }
+  },
+  {
+    "model": "cuentas.rol",
+    "pk": 2,
+    "fields": {
+      "nombre": "Analista",
+      "descripcion": "Valida reglas tributarias y puede crear calificaciones."
+    }
+  },
+  {
+    "model": "cuentas.rol",
+    "pk": 3,
+    "fields": {
+      "nombre": "Administrador",
+      "descripcion": "Control total del sistema. CRUD completo."
+    }
+  },
+  {
+    "model": "cuentas.rol",
+    "pk": 4,
+    "fields": {
+      "nombre": "Auditor",
+      "descripcion": "Puede ver bitácora y reportes."
+    }
+  },
+  {
+    "model": "cuentas.rol",
+    "pk": 5,
+    "fields": {
+      "nombre": "Gerente",
+      "descripcion": "Visualiza panel de indicadores (Dashboard)."
+    }
+  }
+]

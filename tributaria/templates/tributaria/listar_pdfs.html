@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Mis documentos PDF</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Archivo</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for doc in docs %}
+        <tr>
+            <td>{{ doc.nombre }}</td>
+            <td>
+                <a href="{{ doc.archivo.url }}" target="_blank">
+                    Ver / Descargar
+                </a>
+            </td>
+            <td>{{ doc.fecha_subida }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No tienes PDFs subidos.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

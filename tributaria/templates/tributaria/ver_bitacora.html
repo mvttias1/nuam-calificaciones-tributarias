@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Bitácora de acciones{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">Bitácora de acciones</h1>
+
+<div class="nuam-card p-3">
+  <div class="table-responsive">
+    <table class="table table-sm table-striped mb-0">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Acción</th>
+          <th>Entidad</th>
+          <th>ID registro</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in registros %}
+        <tr>
+          <td>{{ r.fecha|date:"d-m-Y H:i" }}</td>
+          <td>{{ r.usuario }}</td>
+          <td>{{ r.accion }}</td>
+          <td>{{ r.entidad }}</td>
+          <td>{{ r.id_registro }}</td>
+          <td>{{ r.detalle|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-muted">
+            Aún no hay movimientos registrados en la bitácora.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
