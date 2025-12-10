@@ -1,0 +1,6 @@
+Django==3.12.0      # (o la versión que estés usando)
+gunicorn
+whitenoise
+psycopg2-binary
+dj-database-url
+python-dotenv        # opcional, útil si usas .env local
