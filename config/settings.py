@@ -108,11 +108,11 @@ DATABASES = {
 # 🔹 Si estamos en Render (DEBUG=False) y existe DATABASE_URL → usar PostgreSQL
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL:
+if DATABASE_URL and DATABASE_URL.strip() != "":
     DATABASES["default"] = dj_database_url.config(
         default=DATABASE_URL,
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=True,  # en Render debe ser True
     )
 
 # =========================
