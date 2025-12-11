@@ -65,7 +65,7 @@
                     </a>
                 </li>
 
-                <!-- ✅ NUEVO: SUBIR PDF (ruta fija /subir-pdf/) -->
+                <!-- SUBIR PDF (ruta fija /subir-pdf/) -->
                 <li class="nav-item">
                     <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}" href="/subir-pdf/">
                         Subir PDF
@@ -98,10 +98,13 @@
                 👤 {{ request.user.username }}
             </span>
 
-            <!-- ✅ LOGOUT FUNCIONAL -->
-            <a href="/cuentas/logout/" class="btn btn-outline-light btn-sm">
-                Cerrar sesión
-            </a>
+            <!-- LOGOUT SEGURO POR POST (evita error 405) -->
+            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light btn-sm">
+                    Cerrar sesión
+                </button>
+            </form>
         </div>
     </div>
 </nav>
