@@ -5,7 +5,7 @@ import re
 from decimal import Decimal
 from PyPDF2 import PdfReader
 
-from .models import Calificacion
+from .models import CalificacionTributaria as Calificacion
 from django.db.models import Sum, Avg, Count
 from .models import Notificacion
 from django.db.models import Q
