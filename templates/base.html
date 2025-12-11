@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,9 +21,7 @@
         .navbar {
             background-color: #0b2f53;
         }
-        .navbar-brand,
-        .nav-link,
-        .navbar-text {
+        .navbar-brand, .nav-link, .navbar-text {
             color: white !important;
         }
         .nav-link.active {
@@ -49,73 +48,85 @@
         <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                <!-- Dashboard -->
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
-                       href="{% url 'dashboard' %}">
-                        Dashboard
-                    </a>
-                </li>
+                {% if request.user.is_authenticated %}
+                    {# ------------------ DASHBOARD (Gerente y Admin) ------------------ #}
+                    {% if rol_nombre == "Administrador" or rol_nombre == "Gerente" %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
+                               href="{% url 'dashboard' %}">
+                                Dashboard
+                            </a>
+                        </li>
+                    {% endif %}
 
-                <!-- Calificaciones -->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
-                       href="{% url 'listar_calificaciones' %}">
-                        Calificaciones
-                    </a>
-                </li>
+                    {# --------- CALIFICACIONES (Corredor, Analista, Admin) ---------- #}
+                    {% if rol_nombre == "Administrador" or rol_nombre == "Corredor" or rol_nombre == "Analista" %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
+                               href="{% url 'listar_calificaciones' %}">
+                                Calificaciones
+                            </a>
+                        </li>
+                    {% endif %}
 
-                <!-- Subir archivo (Excel / CSV) -->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
-                       href="{% url 'subir_archivo' %}">
-                        Subir Archivo
-                    </a>
-                </li>
+                    {# -------- SUBIR ARCHIVO (Corredor, Analista, Admin) ------------ #}
+                    {% if rol_nombre == "Administrador" or rol_nombre == "Corredor" or rol_nombre == "Analista" %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
+                               href="{% url 'subir_archivo' %}">
+                                Subir Archivo
+                            </a>
+                        </li>
 
-                <!-- Subir PDF (ruta fija) -->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
-                       href="/subir-pdf/">
-                        Subir PDF
-                    </a>
-                </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
+                               href="/subir-pdf/">
+                                Subir PDF
+                            </a>
+                        </li>
+                    {% endif %}
 
-                <!-- Bitácora -->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
-                       href="{% url 'ver_bitacora' %}">
-                        Bitácora
-                    </a>
-                </li>
+                    {# ------------- BITÁCORA Y REPORTES (Auditor, Admin) ------------ #}
+                    {% if rol_nombre == "Administrador" or rol_nombre == "Auditor" %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
+                               href="{% url 'ver_bitacora' %}">
+                                Bitácora
+                            </a>
+                        </li>
 
-                <!-- Reportes -->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
-                       href="/reportes/">
-                        Reportes
-                    </a>
-                </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
+                               href="/reportes/">
+                                Reportes
+                            </a>
+                        </li>
+                    {% endif %}
 
-                <!-- Notificaciones -->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
-                       href="/notificaciones/">
-                        Notificaciones
-                    </a>
-                </li>
+                    {# ----------------- NOTIFICACIONES (todos los roles) -------------- #}
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
+                           href="/notificaciones/">
+                            Notificaciones
+                        </a>
+                    </li>
+
+                {% endif %}
 
             </ul>
 
-            <!-- Usuario logueado -->
-            <span class="navbar-text me-3">
-                👤 {{ request.user.username }}
-            </span>
-
-            <!-- Logout -->
-            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
-                Cerrar sesión
-            </a>
+            {% if request.user.is_authenticated %}
+                <span class="navbar-text me-3">
+                    👤 {{ request.user.username }}
+                </span>
+                <a href="/cuentas/logout/" class="btn btn-outline-light btn-sm">
+                    Cerrar sesión
+                </a>
+            {% else %}
+                <a href="/cuentas/login/" class="btn btn-outline-light btn-sm">
+                    Iniciar sesión
+                </a>
+            {% endif %}
         </div>
     </div>
 </nav>
