@@ -20,7 +20,9 @@
         .navbar {
             background-color: #0b2f53;
         }
-        .navbar-brand, .nav-link, .navbar-text {
+        .navbar-brand,
+        .nav-link,
+        .navbar-text {
             color: white !important;
         }
         .nav-link.active {
@@ -47,80 +49,86 @@
         <div class="collapse navbar-collapse" id="menu">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
+                <!-- Dashboard -->
                 <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
+                       href="{% url 'dashboard' %}">
                         Dashboard
                     </a>
                 </li>
 
+                <!-- Calificaciones -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}" href="{% url 'listar_calificaciones' %}">
+                    <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
+                       href="{% url 'listar_calificaciones' %}">
                         Calificaciones
                     </a>
                 </li>
 
+                <!-- Subir archivo (Excel / CSV) -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}" href="{% url 'subir_archivo' %}">
+                    <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
+                       href="{% url 'subir_archivo' %}">
                         Subir Archivo
                     </a>
                 </li>
 
-                <!-- SUBIR PDF (ruta fija /subir-pdf/) -->
+                <!-- Subir PDF (ruta fija) -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}" href="/subir-pdf/">
+                    <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
+                       href="/subir-pdf/">
                         Subir PDF
                     </a>
                 </li>
 
+                <!-- Bitácora -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}" href="{% url 'ver_bitacora' %}">
+                    <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
+                       href="{% url 'ver_bitacora' %}">
                         Bitácora
                     </a>
                 </li>
 
-                <!-- REPORTES -->
+                <!-- Reportes -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}" href="/reportes/">
+                    <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
+                       href="/reportes/">
                         Reportes
                     </a>
                 </li>
 
-                <!-- NOTIFICACIONES -->
+                <!-- Notificaciones -->
                 <li class="nav-item">
-                    <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}" href="/notificaciones/">
+                    <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
+                       href="/notificaciones/">
                         Notificaciones
                     </a>
                 </li>
 
             </ul>
 
+            <!-- Usuario logueado -->
             <span class="navbar-text me-3">
                 👤 {{ request.user.username }}
             </span>
 
-            <!-- LOGOUT SEGURO POR POST (evita error 405) -->
-            <form method="post" action="{% url 'logout' %}" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light btn-sm">
-                    Cerrar sesión
-                </button>
-            </form>
+            <!-- Logout -->
+            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">
+                Cerrar sesión
+            </a>
         </div>
     </div>
 </nav>
-
 
 <!-- CONTENIDO -->
 <main class="container my-4">
     {% block content %}{% endblock %}
 </main>
 
-
 <!-- FOOTER -->
 <footer class="text-center py-3 mt-4">
     Plataforma NUAM • Sistema de Calificaciones Tributarias © 2025
 </footer>
-
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

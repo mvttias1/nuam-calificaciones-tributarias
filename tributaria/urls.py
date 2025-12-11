@@ -11,6 +11,8 @@ urlpatterns = [
     path("errores-validacion/<int:id_archivo>/", views.errores_validacion, name="errores_validacion_archivo"), 
     path("calificaciones/<int:pk>/eliminar/", views.eliminar_calificacion, name="eliminar_calificacion"),
     path("calificaciones/nueva/", views.crear_calificacion, name="crear_calificacion",),
+    path("notificaciones/", views.ver_notificaciones, name="ver_notificaciones"),
+    path("reportes/", views.reporte_calificaciones, name="reporte_calificaciones"),
     path(
         "calificaciones/<int:pk>/editar/",
         views.editar_calificacion,

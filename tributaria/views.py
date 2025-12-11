@@ -5,6 +5,11 @@ import re
 from decimal import Decimal
 from PyPDF2 import PdfReader
 
+from .models import Calificacion
+from django.db.models import Sum, Avg, Count
+from .models import Notificacion
+from django.db.models import Q
+from django.utils import timezone
 from django import forms
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -24,6 +29,88 @@ from .models import (
     DocumentoPDF,
 )
 from cuentas.decorators import rol_requerido
+
+
+@login_required
+def reporte_calificaciones(request):
+    # Filtros del formulario
+    desde = request.GET.get("desde")
+    hasta = request.GET.get("hasta")
+    tipo_instrumento = request.GET.get("tipo_instrumento")
+    tipo_renta = request.GET.get("tipo_renta")
+
+    qs = Calificacion.objects.all()
+
+    if desde:
+        qs = qs.filter(fecha_registro__date__gte=desde)
+    if hasta:
+        qs = qs.filter(fecha_registro__date__lte=hasta)
+    if tipo_instrumento:
+        qs = qs.filter(tipo_instrumento=tipo_instrumento)
+    if tipo_renta:
+        qs = qs.filter(tipo_renta=tipo_renta)
+
+    # Resumen global
+    resumen = qs.aggregate(
+        total_monto_bruto=Sum("monto_bruto"),
+        total_monto_exento=Sum("monto_exento"),
+        total_monto_afecto=Sum("monto_afecto"),
+        total_monto_credito=Sum("monto_credito"),
+        promedio_factor=Avg("factor"),
+        cantidad=Count("id"),
+    )
+
+    context = {
+        "calificaciones": qs[:200],  # para no reventar la tabla, máximo 200 filas
+        "resumen": resumen,
+        "filtros": {
+            "desde": desde or "",
+            "hasta": hasta or "",
+            "tipo_instrumento": tipo_instrumento or "",
+            "tipo_renta": tipo_renta or "",
+        },
+    }
+    return render(request, "tributaria/reporte_calificaciones.html", context)
+
+
+@login_required
+def ver_notificaciones(request):
+    # Base: todas las notificaciones ordenadas de la más nueva
+    notificaciones = Notificacion.objects.all().order_by('-fecha_creacion')
+
+    # --- FILTRO POR NIVEL (info, warning, error, etc.) ---
+    nivel = request.GET.get('nivel')
+    if nivel:
+        notificaciones = notificaciones.filter(nivel=nivel)
+
+    # --- FILTRO POR RANGO DE FECHAS ---
+    desde = request.GET.get('desde')
+    hasta = request.GET.get('hasta')
+
+    if desde:
+        notificaciones = notificaciones.filter(fecha_creacion__date__gte=desde)
+    if hasta:
+        notificaciones = notificaciones.filter(fecha_creacion__date__lte=hasta)
+
+    # --- FILTRO POR USUARIO (para que corredor vea solo lo suyo, por ejemplo) ---
+    # si tu modelo Notificacion tiene un campo 'usuario' lo puedes usar:
+    if hasattr(Notificacion, 'usuario'):
+        # Admin ve todo, el resto solo sus cosas (o globales si usuario es null)
+        es_admin = getattr(request.user, 'is_superuser', False)
+        if not es_admin:
+            notificaciones = notificaciones.filter(
+                Q(usuario=request.user) | Q(usuario__isnull=True)
+            )
+
+    context = {
+        "notificaciones": notificaciones,
+        "filtros": {
+            "nivel": nivel or "",
+            "desde": desde or "",
+            "hasta": hasta or "",
+        },
+    }
+    return render(request, "tributaria/notificaciones.html", context)
 
 
 # -------------------------------------------
@@ -54,6 +141,8 @@ def a_decimal(valor):
     except Exception:
         # Si no se puede convertir, devolvemos None y ya veremos el fallback
         return None
+
+
 
 
 

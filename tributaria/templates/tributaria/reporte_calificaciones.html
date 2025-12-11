@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="mb-4">Reportes de Calificaciones Tributarias</h1>
+
+<!-- Filtros -->
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Desde</label>
+        <input type="date" name="desde" class="form-control" value="{{ filtros.desde }}">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Hasta</label>
+        <input type="date" name="hasta" class="form-control" value="{{ filtros.hasta }}">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Tipo de instrumento</label>
+        <input type="text" name="tipo_instrumento" class="form-control" placeholder="ACCIÓN, BONO..." value="{{ filtros.tipo_instrumento }}">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Tipo de renta</label>
+        <input type="text" name="tipo_renta" class="form-control" placeholder="AFECTA, EXENTA..." value="{{ filtros.tipo_renta }}">
+    </div>
+
+    <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+        <a href="{% url 'reporte_calificaciones' %}" class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+</form>
+
+<!-- Resumen -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title">Calificaciones</h6>
+                <p class="fs-4 mb-0">{{ resumen.cantidad|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title">Monto bruto</h6>
+                <p class="fs-6 mb-0">{{ resumen.total_monto_bruto|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title">Monto exento</h6>
+                <p class="fs-6 mb-0">{{ resumen.total_monto_exento|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title">Monto afecto</h6>
+                <p class="fs-6 mb-0">{{ resumen.total_monto_afecto|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title">Crédito</h6>
+                <p class="fs-6 mb-0">{{ resumen.total_monto_credito|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-title">Factor promedio</h6>
+                <p class="fs-4 mb-0">{{ resumen.promedio_factor|default:"0.00" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de detalle -->
+<div class="table-responsive">
+    <table class="table table-striped table-sm align-middle">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Contribuyente</th>
+                <th>Emisor</th>
+                <th>Instrumento</th>
+                <th>Tipo renta</th>
+                <th>Bruto</th>
+                <th>Exento</th>
+                <th>Afecto</th>
+                <th>Crédito</th>
+                <th>Factor</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in calificaciones %}
+            <tr>
+                <td>{{ c.fecha_registro|date:"d-m-Y" }}</td>
+                <td>{{ c.nombre_contribuyente }}</td>
+                <td>{{ c.nombre_emisor }}</td>
+                <td>{{ c.tipo_instrumento }}</td>
+                <td>{{ c.tipo_renta }}</td>
+                <td>{{ c.monto_bruto }}</td>
+                <td>{{ c.monto_exento }}</td>
+                <td>{{ c.monto_afecto }}</td>
+                <td>{{ c.monto_credito }}</td>
+                <td>{{ c.factor }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="10" class="text-center text-muted">No hay datos para los filtros seleccionados.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<p class="text-muted">* Se muestran solo las primeras 200 filas para evitar sobrecargar la vista.</p>
+
+{% endblock %}

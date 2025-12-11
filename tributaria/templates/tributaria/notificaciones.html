@@ -1,35 +1,70 @@
 {% extends "base.html" %}
-{% block content %}
-<h1>Notificaciones</h1>
+{% load tz %}
 
-<table class="table table-striped mt-3">
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Nivel</th>
-      <th>Mensaje</th>
-    </tr>
-  </thead>
-  <tbody>
+{% block content %}
+
+<h1 class="mb-4">Notificaciones</h1>
+
+<!-- Filtros -->
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Nivel</label>
+        <select name="nivel" class="form-select">
+            <option value="">Todos</option>
+            <option value="INFO" {% if filtros.nivel == "INFO" %}selected{% endif %}>Info</option>
+            <option value="WARNING" {% if filtros.nivel == "WARNING" %}selected{% endif %}>Advertencia</option>
+            <option value="ERROR" {% if filtros.nivel == "ERROR" %}selected{% endif %}>Error</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Desde</label>
+        <input type="date" name="desde" class="form-control" value="{{ filtros.desde }}">
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Hasta</label>
+        <input type="date" name="hasta" class="form-control" value="{{ filtros.hasta }}">
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+        <a href="{% url 'ver_notificaciones' %}" class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+</form>
+
+<!-- Tabla -->
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Nivel</th>
+            <th>Mensaje</th>
+        </tr>
+    </thead>
+    <tbody>
     {% for n in notificaciones %}
-      <tr>
-        <td>{{ n.fecha }}</td>
-        <td>
-          {% if n.nivel == "ERROR" %}
-            <span class="badge bg-danger">Error</span>
-          {% elif n.nivel == "WARNING" %}
-            <span class="badge bg-warning text-dark">Advertencia</span>
-          {% else %}
-            <span class="badge bg-info text-dark">Info</span>
-          {% endif %}
-        </td>
-        <td>{{ n.mensaje }}</td>
-      </tr>
+        <tr>
+            <td>{{ n.fecha_creacion|localtime|date:"d \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}</td>
+            <td>
+                {% if n.nivel == "ERROR" %}
+                    <span class="badge bg-danger">Error</span>
+                {% elif n.nivel == "WARNING" %}
+                    <span class="badge bg-warning text-dark">Aviso</span>
+                {% else %}
+                    <span class="badge bg-info text-dark">Info</span>
+                {% endif %}
+            </td>
+            <td>{{ n.mensaje }}</td>
+        </tr>
     {% empty %}
-      <tr>
-        <td colspan="3">No tienes notificaciones.</td>
-      </tr>
+        <tr>
+            <td colspan="3" class="text-center text-muted">
+                No hay notificaciones con los filtros seleccionados.
+            </td>
+        </tr>
     {% endfor %}
-  </tbody>
+    </tbody>
 </table>
+
 {% endblock %}
