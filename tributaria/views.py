@@ -41,27 +41,26 @@ def reporte_calificaciones(request):
 
     qs = Calificacion.objects.all()
 
+    # --- FILTROS ---
     if desde:
         qs = qs.filter(fecha_registro__date__gte=desde)
     if hasta:
         qs = qs.filter(fecha_registro__date__lte=hasta)
     if tipo_instrumento:
-        qs = qs.filter(tipo_instrumento=tipo_instrumento)
+        qs = qs.filter(instrumento__tipo=tipo_instrumento)
     if tipo_renta:
         qs = qs.filter(tipo_renta=tipo_renta)
 
-    # Resumen global
+    # --- RESUMEN GLOBAL ---
     resumen = qs.aggregate(
-        total_monto_bruto=Sum("monto_bruto"),
-        total_monto_exento=Sum("monto_exento"),
-        total_monto_afecto=Sum("monto_afecto"),
-        total_monto_credito=Sum("monto_credito"),
+        total_monto=Sum("monto"),
+        total_monto_calificado=Sum("monto_calificado"),
         promedio_factor=Avg("factor"),
         cantidad=Count("id"),
     )
 
     context = {
-        "calificaciones": qs[:200],  # para no reventar la tabla, máximo 200 filas
+        "calificaciones": qs[:200],
         "resumen": resumen,
         "filtros": {
             "desde": desde or "",
@@ -70,15 +69,19 @@ def reporte_calificaciones(request):
             "tipo_renta": tipo_renta or "",
         },
     }
+
+    # ⚠️ TEMPLATE REAL QUE EXISTE EN TU PROYECTO
     return render(request, "tributaria/reporte_calificaciones.html", context)
+
+
 
 
 @login_required
 def ver_notificaciones(request):
     # Base: todas las notificaciones ordenadas de la más nueva
-    notificaciones = Notificacion.objects.all().order_by('-fecha_creacion')
+    notificaciones = Notificacion.objects.all().order_by('-fecha')
 
-    # --- FILTRO POR NIVEL (info, warning, error, etc.) ---
+    # --- FILTRO POR NIVEL ---
     nivel = request.GET.get('nivel')
     if nivel:
         notificaciones = notificaciones.filter(nivel=nivel)
@@ -88,14 +91,13 @@ def ver_notificaciones(request):
     hasta = request.GET.get('hasta')
 
     if desde:
-        notificaciones = notificaciones.filter(fecha_creacion__date__gte=desde)
+        notificaciones = notificaciones.filter(fecha__date__gte=desde)
     if hasta:
-        notificaciones = notificaciones.filter(fecha_creacion__date__lte=hasta)
+        notificaciones = notificaciones.filter(fecha__date__lte=hasta)
 
-    # --- FILTRO POR USUARIO (para que corredor vea solo lo suyo, por ejemplo) ---
-    # si tu modelo Notificacion tiene un campo 'usuario' lo puedes usar:
+    # --- FILTRO POR USUARIO ---
+    # Si existe el campo usuario en el modelo, aplicamos lógica por rol
     if hasattr(Notificacion, 'usuario'):
-        # Admin ve todo, el resto solo sus cosas (o globales si usuario es null)
         es_admin = getattr(request.user, 'is_superuser', False)
         if not es_admin:
             notificaciones = notificaciones.filter(
@@ -111,6 +113,7 @@ def ver_notificaciones(request):
         },
     }
     return render(request, "tributaria/notificaciones.html", context)
+
 
 
 # -------------------------------------------
