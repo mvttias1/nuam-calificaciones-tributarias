@@ -7,14 +7,26 @@ from django.contrib.auth import views as auth_views
 
 
 def redirect_to_login(request):
-    return redirect('login')  # Redirige al login automáticamente
+    # Redirige a la página de login por defecto
+    return redirect("login")
+
 
 urlpatterns = [
-    path('', redirect_to_login),          # <--- redirección principal
-    path('admin/', admin.site.urls),
-    path('cuentas/', include('django.contrib.auth.urls')),
-    path('', include('tributaria.urls')),
-    path("cuentas/logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("", redirect_to_login, name="home"),            # raíz -> login
+    path("admin/", admin.site.urls),
+
+    # app de cuentas (login, registro, etc.)
+    path("cuentas/", include("cuentas.urls")),
+
+    # app principal
+    path("", include("tributaria.urls")),
+
+    # LOGOUT correcto (nota: va bajo /cuentas/logout/)
+    path(
+        "cuentas/logout/",
+        auth_views.LogoutView.as_view(next_page="login"),
+        name="logout",
+    ),
 ]
 
 if settings.DEBUG:
