@@ -34,7 +34,7 @@ urlpatterns = [
     path("errores-validacion/<int:id_archivo>/", views.errores_validacion, name="errores_validacion_por_archivo"),
     path('errores/', views.errores_validacion, name='errores_validacion'),
     path("reportes/consolidado/", views.reporte_consolidado, name="reporte_consolidado"),
-    path("notificaciones/", views.listar_notificaciones, name="notificaciones"),
+    path("notificaciones/", views.ver_notificaciones, name="notificaciones"),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path("subir-pdf/", views.subir_pdf, name="subir_pdf"),
     path("pdfs/", views.listar_pdfs, name="listar_pdfs"),
