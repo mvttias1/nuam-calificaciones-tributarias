@@ -4,7 +4,12 @@ import pandas as pd
 import re
 from decimal import Decimal
 from PyPDF2 import PdfReader
+from cuentas.decorators import solo_admin
+from cuentas.models import Usuario, Rol
 
+from .models import CalificacionTributaria, ArchivoTributario, DocumentoPDF
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 from .models import CalificacionTributaria as Calificacion
 from django.db.models import Sum, Avg, Count
 from .models import Notificacion
@@ -29,6 +34,30 @@ from .models import (
     DocumentoPDF,
 )
 from cuentas.decorators import rol_requerido
+
+
+@login_required
+@solo_admin
+def informe_gestion_pdf(request):
+    template = get_template("reportes/informe_gestion.html")
+
+    context = {
+        "usuarios_total": Usuario.objects.count(),
+        "usuarios_por_rol": Rol.objects.all(),
+        "calificaciones_total": CalificacionTributaria.objects.count(),
+        "monto_total": sum(c.monto for c in CalificacionTributaria.objects.all()),
+        "pendientes": CalificacionTributaria.objects.filter(estado="PENDIENTE").count(),
+        "aprobadas": CalificacionTributaria.objects.filter(estado="APROBADA").count(),
+        "archivos": ArchivoTributario.objects.count(),
+        "pdfs": DocumentoPDF.objects.count(),
+        "usuario": request.user,
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="informe_gestion_nuam.pdf"'
+
+    pisa.CreatePDF(template.render(context), dest=response)
+    return response
 
 
 @login_required

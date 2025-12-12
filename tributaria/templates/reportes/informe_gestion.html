@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; font-size: 12px; }
+        h1, h2 { color: #0b2f53; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 6px; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+
+<h1>Informe de Gestión – Plataforma NUAM</h1>
+<p>Generado por: {{ usuario.username }}</p>
+
+<h2>Usuarios</h2>
+<p>Total: {{ usuarios_total }}</p>
+
+<h2>Calificaciones</h2>
+<ul>
+    <li>Total: {{ calificaciones_total }}</li>
+    <li>Pendientes: {{ pendientes }}</li>
+    <li>Aprobadas: {{ aprobadas }}</li>
+    <li>Monto total: ${{ monto_total }}</li>
+</ul>
+
+<h2>Archivos</h2>
+<ul>
+    <li>Archivos tributarios: {{ archivos }}</li>
+    <li>PDFs subidos: {{ pdfs }}</li>
+</ul>
+
+</body>
+</html>

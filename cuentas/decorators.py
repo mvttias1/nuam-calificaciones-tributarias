@@ -1,31 +1,41 @@
 from functools import wraps
-from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 
 
 def rol_requerido(*roles_permitidos):
     """
-    Restringe el acceso a usuarios que tengan alguno de los roles indicados.
-    - roles_permitidos: nombres de rol, ej: ('Administrador', 'Analista')
-    Nota: los superusuarios (is_superuser=True) siempre pueden acceder.
+    Decorador por roles (basado en request.user.rol.nombre).
+
+    Uso:
+        @rol_requerido("Administrador")
+        def mi_vista(...):
+
+        @rol_requerido("Administrador", "Gerente")
+        def otra_vista(...):
     """
     def decorator(view_func):
+        @login_required
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            user = request.user
+            # Si tu Usuario tiene FK 'rol', esto existe:
+            rol = getattr(request.user, "rol", None)
 
-            if not user.is_authenticated:
-                return HttpResponseForbidden("No estás autenticado.")
+            # Si no tiene rol asignado, no pasa
+            if not rol or not getattr(rol, "nombre", None):
+                raise PermissionDenied("No tienes un rol asignado.")
 
-            if user.is_superuser:
-                return view_func(request, *args, **kwargs)
-
-            if not hasattr(user, "rol") or user.rol is None:
-                return HttpResponseForbidden("No tienes un rol asignado en el sistema.")
-
-            if user.rol.nombre not in roles_permitidos:
-                return HttpResponseForbidden("No tienes permisos para acceder a esta funcionalidad.")
+            if rol.nombre not in roles_permitidos:
+                raise PermissionDenied("No tienes permisos para acceder a esta sección.")
 
             return view_func(request, *args, **kwargs)
+
         return _wrapped_view
     return decorator
 
+
+def solo_admin(view_func):
+    """
+    Atajo: solo Administrador.
+    """
+    return rol_requerido("Administrador")(view_func)

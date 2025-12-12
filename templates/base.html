@@ -1,177 +1,173 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Plataforma NUAM</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Plataforma NUAM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        body {
-            background-color: #f5f7fb;
-        }
-        footer {
-            background-color: #0b2f53;
-            color: white;
-        }
-        .navbar {
-            background-color: #0b2f53;
-        }
-        .navbar-brand,
-        .nav-link,
-        .navbar-text {
-            color: white !important;
-        }
-        .nav-link.active {
-            font-weight: bold;
-            text-decoration: underline;
-        }
-    </style>
+  <style>
+    body { background-color: #f5f7fb; }
+    footer { background-color: #0b2f53; color: white; }
+
+    .navbar { background-color: #0b2f53; }
+    .navbar-brand, .nav-link, .navbar-text { color: white !important; }
+
+    .nav-link.active {
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+
+    /* Evita que se corten feo los textos del menú en desktop */
+    @media (min-width: 992px) {
+      .navbar .nav-link { white-space: nowrap; }
+    }
+
+    /* Ícono hamburguesa visible en navbar oscuro */
+    .navbar-dark .navbar-toggler { border-color: rgba(255,255,255,.35); }
+    .navbar-dark .navbar-toggler-icon {
+      filter: invert(1) grayscale(100%);
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
 
-        <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">NUAM</a>
+    <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">NUAM</a>
 
-        <button class="navbar-toggler text-white" type="button"
-                data-bs-toggle="collapse" data-bs-target="#menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- Botón hamburguesa -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#menu"
+            aria-controls="menu" aria-expanded="false" aria-label="Menú">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse" id="menu">
+    <div class="collapse navbar-collapse" id="menu">
 
-            {% if request.user.is_authenticated %}
-            {% with rol=request.user.rol.nombre|default:"" %}
+      <!-- Menú izquierdo -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if request.user.is_authenticated %}
+          {% with rol=request.user.rol.nombre|default:'' %}
 
-                <!-- DASHBOARD -->
-                {% if rol == "Administrador" or rol == "Gerente" %}
-                <li class="nav-item">
-                    <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
-                       href="{% url 'dashboard' %}">
-                        Dashboard
-                    </a>
-                </li>
-                {% endif %}
-
-                <!-- CALIFICACIONES -->
-                {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" %}
-                <li class="nav-item">
-                    <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
-                       href="{% url 'listar_calificaciones' %}">
-                        Calificaciones
-                    </a>
-                </li>
-                {% endif %}
-
-                <!-- SUBIR ARCHIVO -->
-                {% if rol == "Administrador" or rol == "Corredor" %}
-                <li class="nav-item">
-                    <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
-                       href="{% url 'subir_archivo' %}">
-                        Subir Archivo
-                    </a>
-                </li>
-                {% endif %}
-
-                <!-- SUBIR PDF -->
-                {% if rol == "Administrador" or rol == "Corredor" %}
-                <li class="nav-item">
-                    <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
-                       href="/subir-pdf/">
-                        Subir PDF
-                    </a>
-                </li>
-                {% endif %}
-
-                <!-- BITÁCORA -->
-                {% if rol == "Administrador" or rol == "Auditor" %}
-                <li class="nav-item">
-                    <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
-                       href="{% url 'ver_bitacora' %}">
-                        Bitácora
-                    </a>
-                </li>
-                {% endif %}
-
-                <!-- REPORTES -->
-                {% if rol == "Administrador" or rol == "Auditor" %}
-                <li class="nav-item">
-                    <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
-                       href="/reportes/">
-                        Reportes
-                    </a>
-                </li>
-                {% endif %}
-
-                <!-- NOTIFICACIONES -->
-                <li class="nav-item">
-                    <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
-                       href="/notificaciones/">
-                        Notificaciones
-                    </a>
-                </li>
-
-                <!-- USUARIOS (solo Admin) -->
-                {% if rol == "Administrador" %}
-                <li class="nav-item">
-                    <a class="nav-link {% if 'crear-usuario' in request.path %}active{% endif %}"
-                       href="{% url 'crear_usuario' %}">
-                        Usuarios
-                    </a>
-                </li>
-                {% endif %}
-
-            </ul>
-
-            <!-- USUARIO + LOGOUT -->
-            <span class="navbar-text me-3">
-                👤 {{ request.user.username }}
-                {% if request.user.rol %}
-                    <small>({{ request.user.rol.nombre }})</small>
-                {% endif %}
-            </span>
-
-            <form method="post" action="{% url 'logout' %}" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light btn-sm">
-                    Cerrar sesión
-                </button>
-            </form>
-
-            {% endwith %}
-            {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">
-                    Iniciar sesión
-                </a>
+            {% if rol in "Administrador Gerente" %}
+            <li class="nav-item">
+              <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
+                 href="{% url 'dashboard' %}">
+                Dashboard
+              </a>
+            </li>
             {% endif %}
 
+            {% if rol in "Administrador Analista Corredor" %}
+            <li class="nav-item">
+              <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
+                 href="{% url 'listar_calificaciones' %}">
+                Calificaciones
+              </a>
+            </li>
+            {% endif %}
+
+            {% if rol in "Administrador Corredor" %}
+            <li class="nav-item">
+              <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
+                 href="{% url 'subir_archivo' %}">
+                Subir archivo
+              </a>
+            </li>
+            {% endif %}
+
+            {% if rol in "Administrador Corredor" %}
+            <li class="nav-item">
+              <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
+                 href="{% url 'subir_pdf' %}">
+                Subir PDF
+              </a>
+            </li>
+            {% endif %}
+
+            {% if rol in "Administrador Auditor" %}
+            <li class="nav-item">
+              <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
+                 href="{% url 'ver_bitacora' %}">
+                Bitácora
+              </a>
+            </li>
+            {% endif %}
+
+            {% if rol in "Administrador Auditor" %}
+            <li class="nav-item">
+              <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
+                 href="{% url 'reporte_calificaciones' %}">
+                Reportes
+              </a>
+            </li>
+            {% endif %}
+
+            {% if rol in "Administrador Analista Corredor Auditor Gerente" %}
+            <li class="nav-item">
+              <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
+                 href="{% url 'notificaciones' %}">
+                Notificaciones
+              </a>
+            </li>
+            {% endif %}
+
+            {% if rol == "Administrador" %}
+            <li class="nav-item">
+              <a class="nav-link {% if 'gestion' in request.path %}active{% endif %}"
+                 href="{% url 'informe_gestion_pdf' %}">
+                Informe gestión
+              </a>
+            </li>
+            {% endif %}
+
+          {% endwith %}
+        {% endif %}
+
+      </ul>
+
+      <!-- Lado derecho -->
+      {% if request.user.is_authenticated %}
+        <div class="d-flex align-items-center gap-3">
+          <span class="navbar-text">
+            👤 {{ request.user.username }}
+            {% if request.user.rol %}
+              <small class="ms-1">({{ request.user.rol.nombre }})</small>
+            {% endif %}
+          </span>
+
+          <form method="post" action="{% url 'logout' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light btn-sm">
+              Cerrar sesión
+            </button>
+          </form>
         </div>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">
+          Iniciar sesión
+        </a>
+      {% endif %}
+
     </div>
+  </div>
 </nav>
 
-<!-- CONTENIDO -->
 <main class="container my-4">
-    {% block content %}{% endblock %}
+  {% block content %}{% endblock %}
 </main>
 
-<!-- FOOTER -->
 <footer class="text-center py-3 mt-4">
-    Plataforma NUAM • Sistema de Calificaciones Tributarias © 2025
+  Plataforma NUAM • Sistema de Calificaciones Tributarias © 2025
 </footer>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

@@ -14,6 +14,12 @@ urlpatterns = [
     path("notificaciones/", views.ver_notificaciones, name="ver_notificaciones"),
     path("reportes/", views.reporte_calificaciones, name="reporte_calificaciones"),
     path(
+        "reportes/informe-gestion/",
+        views.informe_gestion_pdf,
+        name="informe_gestion_pdf",
+    ),
+
+    path(
         "calificaciones/<int:pk>/editar/",
         views.editar_calificacion,
         name="editar_calificacion",
