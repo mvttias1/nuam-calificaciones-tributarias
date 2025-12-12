@@ -7,3 +7,4 @@ python-dotenv        # opcional, útil si usas .env local
 pandas
 openpyxl
 PyPDF2
+xhtml2pdf
