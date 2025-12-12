@@ -128,7 +128,7 @@ class ArchivoTributarioForm(forms.ModelForm):
 def informe_gestion_pdf(request):
     if pisa is None:
         messages.error(request, "Falta instalar xhtml2pdf para generar PDFs en el servidor.")
-        return redirect("dashboard")
+        return redirect("subir_archivo")
 
     template = get_template("reportes/informe_gestion.html")
 
@@ -432,7 +432,7 @@ def subir_archivo(request):
                     request,
                     "Formato no permitido. Solo CSV/Excel. Para PDF usa 'Subir PDF'.",
                 )
-                return redirect("subir_archivo")
+                return redirect("subir_pdf")
 
             archivo_obj.usuario = request.user
             archivo_obj.estado = "PENDIENTE"
@@ -473,7 +473,7 @@ def subir_archivo(request):
                 archivo_obj.save(update_fields=["estado", "mensaje_estado"])
                 notificar(request.user, f"Archivo #{archivo_obj.id} procesado OK. Registros={ok}.", nivel="INFO")
                 messages.success(request, f"Archivo procesado correctamente. Registros OK: {ok}")
-                return redirect("dashboard")
+                return redirect("subir_archivo")
 
             except Exception as e:
                 archivo_obj.estado = "CON_ERRORES"
@@ -674,7 +674,7 @@ def subir_pdf(request):
                     "PDF subido, pero NO se creó calificación porque el PDF no trae datos válidos "
                     f"({', '.join(faltantes)}).",
                 )
-                return redirect("dashboard")
+                return redirect("subir_pdf")
 
             # Crear emisor + calificación
             emisor, _ = Emisor.objects.get_or_create(

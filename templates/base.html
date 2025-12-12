@@ -39,7 +39,17 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid">
 
-    <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">NUAM</a>
+    {% if request.user.is_authenticated %}
+      {% with rol=request.user.rol.nombre|default:'' %}
+        {% if rol == "Administrador" or rol == "Gerente" %}
+          <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">NUAM</a>
+        {% else %}
+          <a class="navbar-brand fw-bold" href="{% url 'listar_calificaciones' %}">NUAM</a>
+        {% endif %}
+      {% endwith %}
+    {% else %}
+      <a class="navbar-brand fw-bold" href="{% url 'login' %}">NUAM</a>
+    {% endif %}
 
     <!-- Botón hamburguesa -->
     <button class="navbar-toggler" type="button"
@@ -56,76 +66,84 @@
         {% if request.user.is_authenticated %}
           {% with rol=request.user.rol.nombre|default:'' %}
 
-            {% if rol in "Administrador Gerente" %}
-            <li class="nav-item">
-              <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
-                 href="{% url 'dashboard' %}">
-                Dashboard
-              </a>
-            </li>
+            <!-- Dashboard: Administrador y Gerente -->
+            {% if rol == "Administrador" or rol == "Gerente" %}
+              <li class="nav-item">
+                <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
+                   href="{% url 'dashboard' %}">
+                  Dashboard
+                </a>
+              </li>
             {% endif %}
 
-            {% if rol in "Administrador Analista Corredor" %}
-            <li class="nav-item">
-              <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
-                 href="{% url 'listar_calificaciones' %}">
-                Calificaciones
-              </a>
-            </li>
+            <!-- Calificaciones: todos los roles -->
+            {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" or rol == "Auditor" or rol == "Gerente" %}
+              <li class="nav-item">
+                <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
+                   href="{% url 'listar_calificaciones' %}">
+                  Calificaciones
+                </a>
+              </li>
             {% endif %}
 
-            {% if rol in "Administrador Corredor" %}
-            <li class="nav-item">
-              <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
-                 href="{% url 'subir_archivo' %}">
-                Subir archivo
-              </a>
-            </li>
+            <!-- Subir archivo: Corredor, Analista, Administrador -->
+            {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" %}
+              <li class="nav-item">
+                <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
+                   href="{% url 'subir_archivo' %}">
+                  Subir archivo
+                </a>
+              </li>
             {% endif %}
 
-            {% if rol in "Administrador Corredor" %}
-            <li class="nav-item">
-              <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
-                 href="{% url 'subir_pdf' %}">
-                Subir PDF
-              </a>
-            </li>
+            <!-- Subir PDF -->
+            {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" %}
+              <li class="nav-item">
+                <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
+                   href="{% url 'subir_pdf' %}">
+                  Subir PDF
+                </a>
+              </li>
             {% endif %}
 
-            {% if rol in "Administrador Auditor" %}
-            <li class="nav-item">
-              <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
-                 href="{% url 'ver_bitacora' %}">
-                Bitácora
-              </a>
-            </li>
+            <!-- Bitácora: Administrador y Auditor -->
+            {% if rol == "Administrador" or rol == "Auditor" %}
+              <li class="nav-item">
+                <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
+                   href="{% url 'ver_bitacora' %}">
+                  Bitácora
+                </a>
+              </li>
             {% endif %}
 
-            {% if rol in "Administrador Auditor" %}
-            <li class="nav-item">
-              <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
-                 href="{% url 'reporte_calificaciones' %}">
-                Reportes
-              </a>
-            </li>
+            <!-- Reportes: Admin / Auditor -->
+            {% if rol == "Administrador" or rol == "Auditor" %}
+              <li class="nav-item">
+                <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
+                   href="{% url 'reporte_calificaciones' %}">
+                  Reportes
+                </a>
+              </li>
             {% endif %}
 
-            {% if rol in "Administrador Analista Corredor Auditor Gerente" %}
-            <li class="nav-item">
-              <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
-                 href="{% url 'notificaciones' %}">
-                Notificaciones
-              </a>
-            </li>
+            <!-- Notificaciones: TODOS -->
+            {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" or rol == "Auditor" or rol == "Gerente" %}
+              <li class="nav-item">
+                <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
+                   href="{% url 'ver_notificaciones' %}">
+                  Notificaciones
+                </a>
+              </li>
             {% endif %}
 
+            <!-- Informe de gestión PDF: SOLO ADMIN -->
             {% if rol == "Administrador" %}
-            <li class="nav-item">
-              <a class="nav-link {% if 'gestion' in request.path %}active{% endif %}"
-                 href="{% url 'informe_gestion_pdf' %}">
-                Informe gestión
-              </a>
-            </li>
+              <li class="nav-item">
+                <a class="nav-link {% if 'informe-gestion' in request.path %}active{% endif %}"
+                   href="{% url 'informe_gestion_pdf' %}">
+                  Informe gestión (PDF)
+                </a>
+              </li>
             {% endif %}
 
           {% endwith %}

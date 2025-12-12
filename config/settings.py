@@ -35,6 +35,11 @@ LOGIN_URL = "/cuentas/login/"
 LOGIN_REDIRECT_URL = "/calificaciones/"
 LOGOUT_REDIRECT_URL = "/cuentas/login/"
 
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "no-reply@nuam.local"
+
+
 # =========================
 # APLICACIONES
 # =========================
