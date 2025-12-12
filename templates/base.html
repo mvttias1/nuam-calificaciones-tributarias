@@ -21,35 +21,57 @@
       text-underline-offset: 6px;
     }
 
-    /* Evita que se corten feo los textos del menú en desktop */
-    @media (min-width: 992px) {
-      .navbar .nav-link { white-space: nowrap; }
-    }
-
     /* Ícono hamburguesa visible en navbar oscuro */
     .navbar-dark .navbar-toggler { border-color: rgba(255,255,255,.35); }
-    .navbar-dark .navbar-toggler-icon {
-      filter: invert(1) grayscale(100%);
+    .navbar-dark .navbar-toggler-icon { filter: invert(1) grayscale(100%); }
+
+    /* Usuario/rol: no rompe línea */
+    .user-info { white-space: nowrap; }
+
+    /* --- FIX PRINCIPAL: que el menú no se salga --- */
+    /* En pantallas grandes reducimos padding y tamaño para que entre */
+    @media (min-width: 992px) {
+      .navbar-nav .nav-link {
+        padding-left: .55rem;
+        padding-right: .55rem;
+        font-size: .97rem;
+      }
+      .navbar-brand { margin-right: .75rem; }
+    }
+
+    /* Si aun así no cabe, permitimos scroll horizontal SOLO en la barra de links */
+    @media (min-width: 992px) {
+      .nav-scroll {
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+      .nav-scroll::-webkit-scrollbar { height: 6px; }
+      .nav-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 8px; }
     }
   </style>
 </head>
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+{% if request.user.is_authenticated %}
+  {% with rol=request.user.rol.nombre|default:'' %}
+    {% if rol == "Administrador" or rol == "Gerente" %}
+      {% url 'dashboard' as home_url %}
+    {% else %}
+      {% url 'listar_calificaciones' as home_url %}
+    {% endif %}
+  {% endwith %}
+{% else %}
+  {% url 'login' as home_url %}
+{% endif %}
+
+<!-- CAMBIO: navbar-expand-xl (colapsa antes que lg, así no se “sale” en ancho medio) -->
+<nav class="navbar navbar-expand-xl navbar-dark">
   <div class="container-fluid">
 
-    {% if request.user.is_authenticated %}
-      {% with rol=request.user.rol.nombre|default:'' %}
-        {% if rol == "Administrador" or rol == "Gerente" %}
-          <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">NUAM</a>
-        {% else %}
-          <a class="navbar-brand fw-bold" href="{% url 'listar_calificaciones' %}">NUAM</a>
-        {% endif %}
-      {% endwith %}
-    {% else %}
-      <a class="navbar-brand fw-bold" href="{% url 'login' %}">NUAM</a>
-    {% endif %}
+    <a class="navbar-brand fw-bold" href="{{ home_url }}">NUAM</a>
 
     <!-- Botón hamburguesa -->
     <button class="navbar-toggler" type="button"
@@ -61,22 +83,21 @@
     <div class="collapse navbar-collapse" id="menu">
 
       <!-- Menú izquierdo -->
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <!-- CAMBIO: agregamos nav-scroll para que si no cabe, haga scroll horizontal en desktop -->
+      <ul class="navbar-nav me-auto mb-2 mb-xl-0 nav-scroll">
 
         {% if request.user.is_authenticated %}
           {% with rol=request.user.rol.nombre|default:'' %}
 
-            <!-- Dashboard: Administrador y Gerente -->
             {% if rol == "Administrador" or rol == "Gerente" %}
               <li class="nav-item">
-                <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
+                <a class="nav-link {% if 'dashboard' in request.path %}active{% endif %}"
                    href="{% url 'dashboard' %}">
                   Dashboard
                 </a>
               </li>
             {% endif %}
 
-            <!-- Calificaciones: todos los roles -->
             {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" or rol == "Auditor" or rol == "Gerente" %}
               <li class="nav-item">
                 <a class="nav-link {% if 'calificaciones' in request.path %}active{% endif %}"
@@ -86,7 +107,6 @@
               </li>
             {% endif %}
 
-            <!-- Subir archivo: Corredor, Analista, Administrador -->
             {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" %}
               <li class="nav-item">
                 <a class="nav-link {% if 'subir-archivo' in request.path %}active{% endif %}"
@@ -96,7 +116,6 @@
               </li>
             {% endif %}
 
-            <!-- Subir PDF -->
             {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" %}
               <li class="nav-item">
                 <a class="nav-link {% if 'subir-pdf' in request.path %}active{% endif %}"
@@ -106,7 +125,6 @@
               </li>
             {% endif %}
 
-            <!-- Bitácora: Administrador y Auditor -->
             {% if rol == "Administrador" or rol == "Auditor" %}
               <li class="nav-item">
                 <a class="nav-link {% if 'bitacora' in request.path %}active{% endif %}"
@@ -116,7 +134,6 @@
               </li>
             {% endif %}
 
-            <!-- Reportes: Admin / Auditor -->
             {% if rol == "Administrador" or rol == "Auditor" %}
               <li class="nav-item">
                 <a class="nav-link {% if 'reportes' in request.path %}active{% endif %}"
@@ -126,7 +143,6 @@
               </li>
             {% endif %}
 
-            <!-- Notificaciones: TODOS -->
             {% if rol == "Administrador" or rol == "Analista" or rol == "Corredor" or rol == "Auditor" or rol == "Gerente" %}
               <li class="nav-item">
                 <a class="nav-link {% if 'notificaciones' in request.path %}active{% endif %}"
@@ -136,12 +152,20 @@
               </li>
             {% endif %}
 
-            <!-- Informe de gestión PDF: SOLO ADMIN -->
             {% if rol == "Administrador" %}
               <li class="nav-item">
                 <a class="nav-link {% if 'informe-gestion' in request.path %}active{% endif %}"
                    href="{% url 'informe_gestion_pdf' %}">
-                  Informe gestión (PDF)
+                  Informe de gestión (PDF)
+                </a>
+              </li>
+            {% endif %}
+
+            {% if rol == "Administrador" %}
+              <li class="nav-item">
+                <a class="nav-link {% if 'crear-usuario' in request.path %}active{% endif %}"
+                   href="{% url 'crear_usuario' %}">
+                  Crear usuario
                 </a>
               </li>
             {% endif %}
@@ -153,9 +177,9 @@
 
       <!-- Lado derecho -->
       {% if request.user.is_authenticated %}
-        <div class="d-flex align-items-center gap-3">
-          <span class="navbar-text">
-            👤 {{ request.user.username }}
+        <div class="d-flex align-items-center gap-3 ms-xl-3">
+          <span class="navbar-text user-info">
+            {{ request.user.username }}
             {% if request.user.rol %}
               <small class="ms-1">({{ request.user.rol.nombre }})</small>
             {% endif %}
